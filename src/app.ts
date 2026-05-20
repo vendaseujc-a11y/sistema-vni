@@ -4,11 +4,14 @@ import helmet from 'helmet';
 import crmRouter from './modules/crm/crm.routes.js';
 import { requireAuth } from './middlewares/auth.middleware.js';
 import { errorHandler } from './middlewares/error.middleware.js';
+import { dashboardHTML } from './modules/dashboard/dashboard.js';
 
 const app = express();
 
 // Secure the app with Helmet headers
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false // Disabled for developer dashboard to run inline scripts & external Google Fonts smoothly
+}));
 
 // Enable Cross-Origin Resource Sharing (CORS)
 app.use(cors({
@@ -28,6 +31,11 @@ app.get('/health', (req, res) => {
     environment: process.env.NODE_ENV || 'development',
     timestamp: new Date().toISOString()
   });
+});
+
+// Root endpoint serving the beautiful developer & admin console dashboard
+app.get('/', (req, res) => {
+  res.send(dashboardHTML);
 });
 
 // Modular Routes (Protected by authenticating JWT middleware)
