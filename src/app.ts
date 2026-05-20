@@ -2,6 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import crmRouter from './modules/crm/crm.routes.js';
+import companiesRouter from './modules/companies/companies.routes.js';
+import stockRouter from './modules/stock/stock.routes.js';
+import salesRouter from './modules/sales/sales.routes.js';
+import financialRouter from './modules/financial/financial.routes.js';
 import { requireAuth } from './middlewares/auth.middleware.js';
 import { errorHandler } from './middlewares/error.middleware.js';
 import { dashboardHTML } from './modules/dashboard/dashboard.js';
@@ -35,11 +39,18 @@ app.get('/health', (req, res) => {
 
 // Root endpoint serving the beautiful developer & admin console dashboard
 app.get('/', (req, res) => {
-  res.send(dashboardHTML);
+  const html = dashboardHTML
+    .replace('__SUPABASE_URL__', process.env.SUPABASE_URL || '')
+    .replace('__SUPABASE_ANON_KEY__', process.env.SUPABASE_ANON_KEY || '');
+  res.send(html);
 });
 
 // Modular Routes (Protected by authenticating JWT middleware)
+app.use('/api/companies', requireAuth, companiesRouter);
 app.use('/api/crm/customers', requireAuth, crmRouter);
+app.use('/api/stock/products', requireAuth, stockRouter);
+app.use('/api/sales/orders', requireAuth, salesRouter);
+app.use('/api/financial/transactions', requireAuth, financialRouter);
 
 // Fallback for route not found
 app.use('*', (req, res) => {

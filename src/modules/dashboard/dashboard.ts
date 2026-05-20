@@ -3,26 +3,26 @@ export const dashboardHTML = `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema VNI - Console de Administração & ERP</title>
+  <title>VNI - Console de CRM & ERP Modular</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0b0d19;
-      --panel: rgba(17, 20, 38, 0.7);
-      --border: rgba(255, 255, 255, 0.08);
+      --bg: #090b14;
+      --panel: rgba(17, 20, 38, 0.65);
+      --border: rgba(255, 255, 255, 0.07);
       --primary: #3b82f6;
       --primary-glow: rgba(59, 130, 246, 0.15);
       --secondary: #8b5cf6;
       --secondary-glow: rgba(139, 92, 246, 0.15);
       --success: #10b981;
-      --success-glow: rgba(16, 185, 129, 0.2);
+      --success-glow: rgba(16, 185, 129, 0.15);
       --warning: #f59e0b;
+      --danger: #ef4444;
       --text: #f3f4f6;
       --text-muted: #9ca3af;
       --font-sans: 'Inter', sans-serif;
-      --font-mono: 'Fira Code', monospace;
     }
 
     * {
@@ -34,28 +34,39 @@ export const dashboardHTML = `<!DOCTYPE html>
     body {
       background-color: var(--bg);
       background-image: 
-        radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.1) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.1) 0px, transparent 50%);
+        radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.08) 0px, transparent 50%);
       font-family: var(--font-sans);
       color: var(--text);
       min-height: 100vh;
-      line-height: 1.5;
-      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
     }
 
     .container {
       max-width: 1200px;
       margin: 0 auto;
+      width: 100%;
+      padding: 2rem 1rem;
+      flex-grow: 1;
     }
 
     /* HEADER */
     header {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
+      gap: 1rem;
       margin-bottom: 2.5rem;
       padding-bottom: 1.5rem;
       border-bottom: 1px solid var(--border);
+    }
+
+    @media (min-width: 768px) {
+      header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
     }
 
     .logo-container {
@@ -81,301 +92,334 @@ export const dashboardHTML = `<!DOCTYPE html>
       -webkit-text-fill-color: transparent;
     }
 
-    .status-container {
+    .auth-status-bar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .status-badge {
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      background: rgba(16, 185, 129, 0.05);
-      border: 1px solid rgba(16, 185, 129, 0.2);
+      background: rgba(239, 68, 68, 0.05);
+      border: 1px solid rgba(239, 68, 68, 0.2);
       padding: 0.35rem 0.85rem;
       border-radius: 2rem;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 500;
+      color: var(--danger);
+    }
+
+    .status-badge.connected {
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid rgba(16, 185, 129, 0.2);
       color: var(--success);
     }
 
-    .status-pulse {
+    .status-dot {
       width: 8px;
       height: 8px;
-      background-color: var(--success);
+      background-color: var(--danger);
       border-radius: 50%;
-      box-shadow: 0 0 0 0 var(--success-glow);
-      animation: pulse 1.8s infinite;
     }
 
-    @keyframes pulse {
-      0% {
-        transform: scale(0.95);
-        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-      }
-      70% {
-        transform: scale(1);
-        box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
-      }
-      100% {
-        transform: scale(0.95);
-        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
-      }
+    .status-badge.connected .status-dot {
+      background-color: var(--success);
+      box-shadow: 0 0 8px var(--success);
     }
 
-    /* GRID LAYOUT */
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
+    /* NAVIGATION TABS */
+    .tabs-nav {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
       margin-bottom: 2rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
     }
 
-    @media (min-width: 768px) {
-      .grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.6rem 1.2rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 0.5rem;
+      transition: all 0.2s ease;
+      white-space: nowrap;
     }
 
-    /* CARDS */
+    .tab-btn:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .tab-btn.active {
+      color: #ffffff;
+      background: var(--primary-glow);
+      border: 1px solid var(--primary);
+    }
+
+    /* CARD STRUCTURES */
     .card {
       background: var(--panel);
       backdrop-filter: blur(12px);
       border: 1px solid var(--border);
       border-radius: 1rem;
-      padding: 1.5rem;
+      padding: 2rem;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-      transition: transform 0.2s ease, border-color 0.2s ease;
+      margin-bottom: 1.5rem;
+      display: none;
     }
 
-    .card:hover {
-      border-color: rgba(255, 255, 255, 0.15);
-      transform: translateY(-2px);
+    .card.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
     }
 
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .card-title {
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--text-muted);
+      font-size: 1.25rem;
       font-weight: 600;
-    }
-
-    .card-value {
-      font-size: 1.75rem;
-      font-weight: 700;
       color: #ffffff;
-      margin-bottom: 0.5rem;
-    }
-
-    .card-indicator {
-      font-size: 0.8rem;
-      color: var(--success);
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-
-    .card-indicator.alert {
-      color: var(--warning);
-    }
-
-    /* TEST CONSOLE AREA */
-    .console-card {
-      grid-column: 1 / -1;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-    }
-
-    @media (min-width: 992px) {
-      .console-card {
-        grid-template-columns: 2fr 3fr;
-      }
-    }
-
-    .console-controls {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .section-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: #ffffff;
+      margin-bottom: 1.5rem;
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
 
-    .section-title::before {
-      content: '';
-      display: inline-block;
-      width: 4px;
-      height: 1rem;
-      background: var(--primary);
-      border-radius: 2px;
-    }
-
-    p.muted {
-      font-size: 0.875rem;
-      color: var(--text-muted);
-      margin-bottom: 1rem;
-    }
-
-    .btn-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    button {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.75rem 1.25rem;
-      border-radius: 0.5rem;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      text-align: left;
-      transition: all 0.2s ease;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    button:hover {
-      background: var(--primary-glow);
-      border-color: var(--primary);
-      color: #ffffff;
-    }
-
-    button.secondary-btn:hover {
-      background: var(--secondary-glow);
-      border-color: var(--secondary);
-    }
-
-    .btn-arrow {
-      font-size: 1.1rem;
-      opacity: 0.5;
-      transition: transform 0.2s ease;
-    }
-
-    button:hover .btn-arrow {
-      opacity: 1;
-      transform: translateX(3px);
-    }
-
-    /* CODE TERMINAL DISPLAY */
-    .terminal-container {
-      display: flex;
-      flex-direction: column;
-      background: #05060b;
-      border: 1px solid var(--border);
-      border-radius: 0.75rem;
-      overflow: hidden;
-      min-height: 320px;
-    }
-
-    .terminal-header {
-      background: #0e1017;
-      padding: 0.6rem 1rem;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .terminal-dots {
-      display: flex;
-      gap: 0.35rem;
-    }
-
-    .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-    }
-    .dot-red { background-color: #ef4444; }
-    .dot-yellow { background-color: #f59e0b; }
-    .dot-green { background-color: #10b981; }
-
-    .terminal-title {
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
-
-    .terminal-body {
-      flex-grow: 1;
-      padding: 1.25rem;
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      overflow-y: auto;
-      white-space: pre-wrap;
-      word-break: break-all;
-      color: #a7f3d0; /* Soft neon green */
-    }
-
-    /* INFRASTRUCTURE EXPLAINER */
-    .info-grid {
-      grid-column: 1 / -1;
+    /* GRID CONTROLS */
+    .form-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 1.5rem;
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
     }
 
     @media (min-width: 768px) {
-      .info-grid {
-        grid-template-columns: 1fr 1fr;
+      .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .form-grid.triple {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .span-2 {
+        grid-column: span 2;
       }
     }
 
-    .feature-tag {
-      display: inline-block;
-      font-size: 0.75rem;
-      padding: 0.15rem 0.5rem;
-      border-radius: 4px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border);
-      margin-bottom: 0.5rem;
-    }
-
-    .feature-tag.blue { background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.2); color: #93c5fd; }
-    .feature-tag.purple { background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.2); color: #c084fc; }
-
-    ul.features-list {
-      list-style-type: none;
-      font-size: 0.875rem;
+    /* FORM INPUTS */
+    .input-group {
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 500;
       color: var(--text-muted);
     }
 
-    ul.features-list li::before {
-      content: '✓';
-      color: var(--success);
-      margin-right: 0.5rem;
+    input, select, textarea {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      color: #ffffff;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, var(--primary), #2563eb);
+      border: none;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.85rem 1.75rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 15px var(--primary-glow);
+    }
+
+    /* TABLE */
+    .table-container {
+      overflow-x: auto;
+      margin-top: 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      background: rgba(0, 0, 0, 0.15);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+      text-align: left;
+    }
+
+    th, td {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: rgba(0, 0, 0, 0.3);
+      color: #ffffff;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* BADGES */
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge.info { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); color: #93c5fd; }
+    .badge.success { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); color: #34d399; }
+    .badge.warning { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); color: #fcd34d; }
+    .badge.danger { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #fca5a5; }
+
+    /* ACTION BUTTONS */
+    .btn-action {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: #ffffff;
+      padding: 0.35rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .btn-action:hover {
+      background: var(--success-glow);
+      border-color: var(--success);
+      color: #ffffff;
+    }
+
+    /* SALES CART */
+    .cart-section {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      margin-top: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .cart-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .cart-items-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .cart-item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.35rem;
+      font-size: 0.85rem;
+    }
+
+    .cart-remove-btn {
+      color: var(--danger);
+      background: none;
+      border: none;
+      cursor: pointer;
       font-weight: bold;
     }
 
+    /* NOTIFICATION TOAST */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #121420;
+      border: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast-success { border-color: var(--success); color: #ffffff; }
+    .toast-error { border-color: var(--danger); color: #ffffff; }
+
+    /* FOOTER */
     footer {
       text-align: center;
-      margin-top: 3rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--border);
+      padding: 2rem 0;
       font-size: 0.8rem;
       color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      margin-top: auto;
     }
   </style>
 </head>
 <body>
+  
   <div class="container">
     
     <!-- HEADER -->
@@ -383,276 +427,967 @@ export const dashboardHTML = `<!DOCTYPE html>
       <div class="logo-container">
         <div class="logo-badge">VNI</div>
         <div>
-          <h1>Sistema CRM & ERP Modular</h1>
-          <p style="font-size: 0.75rem; color: var(--text-muted);">Console de Administração & Testes</p>
+          <h1>Sistema ERP & CRM Corporativo</h1>
+          <p id="company-name-subtitle" style="font-size: 0.75rem; color: var(--text-muted);">Isolamento Multitenant Ativo (Carregando...)</p>
         </div>
       </div>
-      <div class="status-container">
-        <div class="status-pulse"></div>
-        <span>Servidor Ativo</span>
+      <div class="auth-status-bar">
+        <div id="connection-badge" class="status-badge">
+          <div class="status-dot"></div>
+          <span id="connection-text">Desconectado</span>
+        </div>
       </div>
     </header>
 
-    <!-- OVERVIEW METRIC CARDS -->
-    <div class="grid">
-      <!-- CRM -->
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Módulo CRM / Clientes</span>
-          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color: var(--primary);"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-        </div>
-        <div class="card-value">Ativo</div>
-        <div class="card-indicator">
-          <span>✓ RLS Isolado por Empresa</span>
-        </div>
-      </div>
-
-      <!-- Financeiro -->
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Módulo Financeiro</span>
-          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color: var(--secondary);"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-        </div>
-        <div class="card-value">Ledger Integrado</div>
-        <div class="card-indicator">
-          <span>✓ Contas a Receber Automático</span>
-        </div>
-      </div>
-
-      <!-- Estoque -->
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Estoque & Produção</span>
-          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color: var(--warning);"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-        </div>
-        <div class="card-value">Monitorado</div>
-        <div class="card-indicator alert">
-          <span>⚠ Triggers de Baixa no Faturamento</span>
-        </div>
-      </div>
+    <!-- NAVIGATION TABS -->
+    <div class="tabs-nav">
+      <button class="tab-btn active" onclick="switchTab('auth')">🔐 Sessão & Empresa</button>
+      <button class="tab-btn" onclick="switchTab('crm')">👥 Clientes (CRM)</button>
+      <button class="tab-btn" onclick="switchTab('stock')">📦 Produtos & Estoque</button>
+      <button class="tab-btn" onclick="switchTab('sales')">🛒 Pedidos & Vendas</button>
+      <button class="tab-btn" onclick="switchTab('financial')">💰 Caixa & Financeiro</button>
     </div>
 
-    <!-- MAIN CONSOLE INTERACTION -->
-    <div class="card console-card">
+    <!-- TAB 1: AUTH & COMPANY -->
+    <div id="tab-auth" class="card active">
+      <span class="card-title">🔐 Controle de Acesso e Perfil Corporativo</span>
       
-      <!-- CONTROLS -->
-      <div class="console-controls">
-        <div>
-          <span class="section-title">Sandbox de Desenvolvimento</span>
-          <p class="muted">Você pode disparar chamadas para as rotas da sua API Express e ver as respostas e simulações em tempo real.</p>
-        </div>
-
-        <div class="btn-group">
-          <!-- Button 1 -->
-          <button onclick="testHealth()">
-            <span>📡 Testar Rota de Saúde (/health)</span>
-            <span class="btn-arrow">→</span>
-          </button>
-          
-          <!-- Button 2 -->
-          <button class="secondary-btn" onclick="simulateClientCreate()">
-            <span>👥 Simular Requisição de Cliente (POST)</span>
-            <span class="btn-arrow">→</span>
-          </button>
-
-          <!-- Button 3 -->
-          <button onclick="simulateNFeXML()">
-            <span>📝 Gerar & Assinar XML NF-e (Simulado A1)</span>
-            <span class="btn-arrow">→</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- TERMINAL DISPLAY -->
-      <div class="terminal-container">
-        <div class="terminal-header">
-          <div class="terminal-dots">
-            <div class="dot dot-red"></div>
-            <div class="dot dot-yellow"></div>
-            <div class="dot dot-green"></div>
+      <!-- NOT SIGNED IN VIEW -->
+      <div id="auth-signed-out">
+        <p class="muted" style="margin-bottom: 1.5rem;">Cadastre-se ou entre em sua conta administrativa para inicializar o seu ERP dedicado e isolado por Row Level Security.</p>
+        <div class="form-grid">
+          <div class="input-group">
+            <label>E-mail Corporativo</label>
+            <input type="email" id="auth-email" placeholder="nome@empresa.com" value="ecortesbr@gmail.com">
           </div>
-          <span class="terminal-title" id="terminal-title">api-console.log</span>
+          <div class="input-group">
+            <label>Senha de Acesso</label>
+            <input type="password" id="auth-password" placeholder="Sua senha secreta">
+          </div>
         </div>
-        <div class="terminal-body" id="terminal-output">// Clique em um dos botões do painel lateral para testar a resposta do seu servidor.</div>
+        <div style="display: flex; gap: 1rem;">
+          <button class="btn-submit" onclick="handleAuth('signin')">Entrar na Conta</button>
+          <button class="btn-submit" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border);" onclick="handleAuth('signup')">Criar Nova Conta</button>
+        </div>
       </div>
 
+      <!-- SIGNED IN VIEW -->
+      <div id="auth-signed-in" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
+          <div>
+            <h3 style="color: #ffffff;" id="user-welcome-title">Bem-vindo, Administrador!</h3>
+            <p class="muted" id="user-email-subtitle">ecortesbr@gmail.com</p>
+          </div>
+          <button class="btn-action" style="color: var(--danger);" onclick="handleSignOut()">Sair da Conta</button>
+        </div>
+
+        <!-- NO COMPANY DETECTED VIEW -->
+        <div id="company-provision-box" style="display: none; background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); padding: 1.5rem; border-radius: 0.75rem;">
+          <h4 style="color: #ffffff; margin-bottom: 0.5rem;">🏢 Vincular Nova Empresa (Locatário ERP)</h4>
+          <p class="muted" style="margin-bottom: 1rem;">Sua conta de usuário foi autenticada, mas ela ainda não possui uma Empresa (Tenant) vinculada no PostgreSQL. Crie uma agora para habilitar as políticas de RLS e começar a cadastrar dados.</p>
+          <div class="form-grid">
+            <div class="input-group">
+              <label>Nome Comercial / Razão Social</label>
+              <input type="text" id="company-name" placeholder="VNI Distribuidora Ltda">
+            </div>
+            <div class="input-group">
+              <label>CNPJ da Empresa</label>
+              <input type="text" id="company-cnpj" placeholder="00.000.000/0001-00">
+            </div>
+          </div>
+          <button class="btn-submit" style="background: linear-gradient(135deg, var(--secondary), #7c3aed);" onclick="handleCreateCompany()">Inicializar Empresa ERP</button>
+        </div>
+
+        <!-- COMPANY DETAILS ACTIVE VIEW -->
+        <div id="company-details-box" style="display: none; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); padding: 1.5rem; border-radius: 0.75rem;">
+          <h4 style="color: #ffffff; margin-bottom: 0.5rem;">🏢 Empresa Vinculada com Sucesso</h4>
+          <p class="muted" style="margin-bottom: 1rem;">O seu ERP local está conectado à sua empresa em nuvem no Supabase. Os dados de todos os módulos estão isolados.</p>
+          <div class="form-grid triple">
+            <div>
+              <label>ID da Empresa (PostgreSQL UUID)</label>
+              <p style="font-family: monospace; font-size: 0.8rem; margin-top: 0.25rem; color: #ffffff;" id="company-uuid-label">-</p>
+            </div>
+            <div>
+              <label>Nome / Razão Social</label>
+              <p style="font-size: 0.9rem; font-weight: 600; margin-top: 0.25rem; color: #ffffff;" id="company-name-label">-</p>
+            </div>
+            <div>
+              <label>CNPJ Registrado</label>
+              <p style="font-size: 0.9rem; margin-top: 0.25rem; color: #ffffff;" id="company-cnpj-label">-</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
 
-    <!-- SUB-MODULES DOCUMENTATION -->
-    <div class="info-grid" style="margin-top: 1.5rem;">
+    <!-- TAB 2: CRM & CLIENTES -->
+    <div id="tab-crm" class="card">
+      <span class="card-title">👥 Gestão de Clientes e Interações CRM</span>
       
-      <!-- Database Info -->
-      <div class="card">
-        <span class="feature-tag blue">PostgreSQL + Supabase Cloud</span>
-        <h3 style="margin-bottom: 0.5rem; color: #ffffff;">Banco de Dados Inteligente</h3>
-        <p class="muted" style="margin-bottom: 1rem;">O banco de dados do seu projeto está totalmente estruturado e ativo. Suas chaves de segurança foram vinculadas localmente, habilitando:</p>
-        <ul class="features-list">
-          <li>Políticas de RLS por <code>company_id</code> (Multitenancy Seguro)</li>
-          <li>Trigger de criação automática de Perfis para novos logins</li>
-          <li>Auto-dedução de estoque sob faturamento de vendas</li>
-          <li>Integração da Ficha Técnica (BOM) para manufatura de produtos</li>
-        </ul>
+      <!-- CREATE CUSTOMER FORM -->
+      <h3 style="font-size: 1rem; color: #ffffff; margin-bottom: 1rem;">Cadastrar Novo Cliente</h3>
+      <div class="form-grid">
+        <div class="input-group">
+          <label>Nome / Razão Social</label>
+          <input type="text" id="cust-name" placeholder="Ex: JC Distribuidora Ltda">
+        </div>
+        <div class="input-group">
+          <label>Tipo de Pessoa</label>
+          <select id="cust-type">
+            <option value="PJ">Pessoa Jurídica (PJ)</option>
+            <option value="PF">Pessoa Física (PF)</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>CPF ou CNPJ</label>
+          <input type="text" id="cust-doc" placeholder="12.345.678/0001-99">
+        </div>
+        <div class="input-group">
+          <label>E-mail de Contato</label>
+          <input type="email" id="cust-email" placeholder="financeiro@empresa.com">
+        </div>
+        <div class="input-group">
+          <label>Telefone / WhatsApp</label>
+          <input type="text" id="cust-phone" placeholder="(11) 99999-8888">
+        </div>
+        <div class="input-group">
+          <label>Cidade / UF</label>
+          <div style="display: grid; grid-template-columns: 3fr 1fr; gap: 0.5rem;">
+            <input type="text" id="cust-city" placeholder="São Paulo">
+            <input type="text" id="cust-state" placeholder="SP" maxlength="2">
+          </div>
+        </div>
+      </div>
+      <button class="btn-submit" onclick="handleCreateCustomer()">Cadastrar Cliente no CRM</button>
+
+      <!-- CUSTOMERS LIST -->
+      <h3 style="font-size: 1rem; color: #ffffff; margin-top: 2rem; margin-bottom: 0.5rem;">Clientes Cadastrados</h3>
+      <div class="table-container">
+        <table id="customers-table">
+          <thead>
+            <tr>
+              <th>Nome / Razão Social</th>
+              <th>Documento</th>
+              <th>E-mail</th>
+              <th>Contato</th>
+              <th>Status</th>
+              <th>Compras Totais</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="6" style="text-align: center; color: var(--text-muted);">Nenhum cliente cadastrado ainda.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 3: PRODUCTS & STOCK -->
+    <div id="tab-stock" class="card">
+      <span class="card-title">📦 Catálogo de Mercadorias e Controle de Estoque</span>
+      
+      <!-- CREATE PRODUCT FORM -->
+      <h3 style="font-size: 1rem; color: #ffffff; margin-bottom: 1rem;">Cadastrar Nova Mercadoria / Insumo</h3>
+      <div class="form-grid triple">
+        <div class="input-group">
+          <label>Código SKU (Único)</label>
+          <input type="text" id="prod-sku" placeholder="SKU-PROD-100">
+        </div>
+        <div class="input-group">
+          <label>Nome do Produto</label>
+          <input type="text" id="prod-name" placeholder="Coca Cola 2L">
+        </div>
+        <div class="input-group">
+          <label>Unidade de Medida</label>
+          <select id="prod-unit">
+            <option value="UN">Unidade (UN)</option>
+            <option value="KG">Quilo (KG)</option>
+            <option value="L">Litro (L)</option>
+            <option value="CX">Caixa (CX)</option>
+            <option value="M">Metro (M)</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>Preço de Custo (R$)</label>
+          <input type="number" id="prod-cost" placeholder="2.50" step="0.01">
+        </div>
+        <div class="input-group">
+          <label>Preço de Venda (R$)</label>
+          <input type="number" id="prod-price" placeholder="6.90" step="0.01">
+        </div>
+        <div class="input-group">
+          <label>Saldo Inicial de Estoque</label>
+          <input type="number" id="prod-stock" placeholder="50">
+        </div>
+        <div class="input-group">
+          <label>Estoque Mínimo (Alerta)</label>
+          <input type="number" id="prod-min" placeholder="5">
+        </div>
+        <div class="input-group">
+          <label>Tipo de Item</label>
+          <select id="prod-type">
+            <option value="product">Produto Acabado (Venda)</option>
+            <option value="raw_material">Matéria-Prima (Consumo)</option>
+            <option value="service">Prestação de Serviço</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-submit" onclick="handleCreateProduct()">Cadastrar Produto no Estoque</button>
+
+      <!-- PRODUCTS LIST -->
+      <h3 style="font-size: 1rem; color: #ffffff; margin-top: 2rem; margin-bottom: 0.5rem;">Inventário e Saldo de Estoque</h3>
+      <div class="table-container">
+        <table id="products-table">
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Nome</th>
+              <th>Tipo</th>
+              <th>Unidade</th>
+              <th>Custo (R$)</th>
+              <th>Venda (R$)</th>
+              <th>Estoque Disponível</th>
+              <th>Status Estoque</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="8" style="text-align: center; color: var(--text-muted);">Nenhum produto cadastrado ainda.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 4: SALES ORDERS -->
+    <div id="tab-sales" class="card">
+      <span class="card-title">🛒 Emissão de Vendas e Faturamento</span>
+      
+      <div class="form-grid">
+        <!-- CUSTOMER SELECT -->
+        <div class="input-group">
+          <label>Selecione o Cliente</label>
+          <select id="sale-customer-select">
+            <option value="">Selecione um cliente cadastrado...</option>
+          </select>
+        </div>
+        
+        <!-- PRODUCT ADDER -->
+        <div class="input-group" style="background: rgba(255,255,255,0.02); border: 1px dashed var(--border); padding: 1rem; border-radius: 0.5rem;">
+          <label style="color: #ffffff; font-weight: 600; margin-bottom: 0.5rem;">Adicionar Item ao Carrinho</label>
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <select id="sale-product-select" onchange="updateProductUnitPrice()">
+              <option value="">Selecione um produto...</option>
+            </select>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+              <input type="number" id="sale-product-qty" placeholder="Qtd" value="1">
+              <input type="number" id="sale-product-price" placeholder="Preço (R$)" step="0.01">
+            </div>
+            <button class="btn-action" style="text-align: center; justify-content: center; background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.3);" onclick="addCartItem()">Adicionar Item</button>
+          </div>
+        </div>
       </div>
 
-      <!-- Zero Cost NF-e Info -->
-      <div class="card">
-        <span class="feature-tag purple">Arquitetura de Custo Zero (SPED / NF-e)</span>
-        <h3 style="margin-bottom: 0.5rem; color: #ffffff;">Emissão de Notas sem Intermediários</h3>
-        <p class="muted" style="margin-bottom: 1rem;">O sistema de faturamento foi estruturado para evitar mensalidades de APIs pagas, implementando a assinatura digital local em nível de backend:</p>
-        <ul class="features-list">
-          <li>Leitura e validação de certificados digitais do cliente (.pfx / .p12)</li>
-          <li>Assinatura de XML nativa com a chave privada usando o módulo <code>crypto</code></li>
-          <li>Envio e recepção SOAP direta para o webservice SEFAZ do respectivo estado</li>
-          <li>Exportação automática de repositório XML consolidado mensal para a Contabilidade</li>
-        </ul>
+      <!-- CART CONTAINER -->
+      <div class="cart-section">
+        <div class="cart-title">
+          <span>Carrinho de Vendas</span>
+          <span id="cart-total-label">Total: R$ 0,00</span>
+        </div>
+        <div class="cart-items-list" id="cart-items-container">
+          <p class="muted" style="text-align: center; margin: 1rem 0;">Seu carrinho está vazio. Escolha um produto e adicione.</p>
+        </div>
+        <button class="btn-submit" style="width: 100%;" onclick="handleCreateSalesOrder()">Salvar Pedido de Venda (Orçamento)</button>
       </div>
 
+      <!-- SALES ORDERS LIST -->
+      <h3 style="font-size: 1rem; color: #ffffff; margin-top: 2rem; margin-bottom: 0.5rem;">Pedidos de Vendas Registrados</h3>
+      <div class="table-container">
+        <table id="sales-table">
+          <thead>
+            <tr>
+              <th>Criação</th>
+              <th>Cliente</th>
+              <th>Valor do Pedido</th>
+              <th>Status Venda</th>
+              <th>NF-e Status</th>
+              <th>Ações de Faturamento</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="6" style="text-align: center; color: var(--text-muted);">Nenhuma venda registrada ainda.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 5: FINANCIAL & LEDGER -->
+    <div id="tab-financial" class="card">
+      <span class="card-title">💰 Caixa Financeiro e Livro-Razão</span>
+      <p class="muted" style="margin-bottom: 1.5rem;">Este módulo representa o livro-razão financeiro do seu ERP. Quando você clica em <b>"Faturar/Aprovar"</b> na aba de Vendas, a automação por trigger do PostgreSQL gera automaticamente uma conta a receber aqui.</p>
+      
+      <!-- BALANCES -->
+      <div class="form-grid triple" style="margin-bottom: 1.5rem;">
+        <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); padding: 1rem; border-radius: 0.5rem; text-align: center;">
+          <label>Receita Recebida</label>
+          <h4 style="font-size: 1.5rem; font-weight: 700; color: var(--success); margin-top: 0.25rem;">R$ 0,00</h4>
+        </div>
+        <div style="background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2); padding: 1rem; border-radius: 0.5rem; text-align: center;">
+          <label>Recebíveis Pendentes (A Receber)</label>
+          <h4 id="financial-receivables-label" style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-top: 0.25rem;">R$ 0,00</h4>
+        </div>
+        <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); padding: 1rem; border-radius: 0.5rem; text-align: center;">
+          <label>Despesas (Contas a Pagar)</label>
+          <h4 style="font-size: 1.5rem; font-weight: 700; color: var(--warning); margin-top: 0.25rem;">R$ 0,00</h4>
+        </div>
+      </div>
+
+      <!-- TRANSACTIONS LIST -->
+      <h3 style="font-size: 1rem; color: #ffffff; margin-bottom: 0.5rem;">Lançamentos de Contas a Pagar & Receber (Fluxo de Caixa)</h3>
+      <div class="table-container">
+        <table id="transactions-table">
+          <thead>
+            <tr>
+              <th>Vencimento</th>
+              <th>Descrição</th>
+              <th>Valor (R$)</th>
+              <th>Fluxo</th>
+              <th>Status Lançamento</th>
+              <th>Categoria</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="6" style="text-align: center; color: var(--text-muted);">Nenhum lançamento no fluxo de caixa ainda.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="toast">
+      <span id="toast-message">Mensagem...</span>
     </div>
 
     <!-- FOOTER -->
     <footer>
-      <p>Sistema VNI CRM & ERP - Desenvolvido em Node.js, TypeScript & Supabase PostgreSQL.</p>
+      <p>VNI CRM & ERP - Sistema de Próxima Geração com PostgreSQL e RLS.</p>
     </footer>
 
   </div>
 
+  <!-- LOAD SUPABASE JS FROM CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
   <script>
-    const baseUrl = window.location.origin;
+    // Configuration dynamically injected by Node.js server!
+    const SUPABASE_URL = "__SUPABASE_URL__";
+    const SUPABASE_ANON_KEY = "__SUPABASE_ANON_KEY__";
 
-    function setTerminalTitle(title) {
-      document.getElementById('terminal-title').innerText = title;
-    }
+    let supabase = null;
+    let userSession = null;
+    let activeCompany = null;
+    let currentCart = [];
+    
+    // Loaded lists for dropdown selections
+    let customerList = [];
+    let productList = [];
 
-    function printTerminal(content, isError = false) {
-      const output = document.getElementById('terminal-output');
-      output.style.color = isError ? '#f87171' : '#a7f3d0';
-      output.innerText = typeof content === 'string' ? content : JSON.stringify(content, null, 2);
-    }
-
-    async function testHealth() {
-      setTerminalTitle('GET /health');
-      printTerminal('Enviando requisição de teste para o servidor...');
+    // Initialize Supabase Client
+    if (SUPABASE_URL !== "__SUPABASE_URL__" && SUPABASE_ANON_KEY !== "__SUPABASE_ANON_KEY__") {
       try {
-        const response = await fetch('/health');
-        const data = await response.json();
-        printTerminal(data);
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       } catch (err) {
-        printTerminal('Erro ao conectar com a API Vercel:\\n' + err.message, true);
+        console.error("Falha ao inicializar o Supabase client:", err);
       }
     }
 
-    function simulateClientCreate() {
-      setTerminalTitle('POST /api/crm/customers [Simulado]');
-      const mockPayload = {
-        person_type: "PJ",
-        name: "JC Distribuidora Ltda",
-        trade_name: "Distribuidora JC",
-        email: "financeiro@distribuidorajc.com",
-        phone: "(11) 99999-8888",
-        cpf_cnpj: "12.345.678/0001-99",
-        status: "active"
-      };
+    // Initialize application sessions
+    window.addEventListener('load', async () => {
+      if (!supabase) {
+        showToast("⚠️ Supabase não configurado. Adicione as chaves no .env e suba novamente na Vercel.", "error");
+        return;
+      }
 
-      const mockResponse = {
-        message: "Simulação de Requisição Segura",
-        endpoint: "/api/crm/customers",
-        status: "Pendente de Token de Autorização (JWT)",
-        description: "Esta rota está blindada com o middleware requireAuth. Para realizar escrituras no banco, o aplicativo cliente deve enviar o Bearer JWT do Supabase Auth no cabeçalho Authorization.",
-        request_body_enviado: mockPayload,
-        response_esperada_ao_estar_autenticado: {
-          success: true,
-          data: {
-            id: "73da872c-b51f-49ff-88df-b9cf6e9e4f21",
-            company_id: "get_user_company_id() [Injetado automaticamente pelo RLS]",
-            ...mockPayload,
-            total_purchases: "0.00",
-            created_at: new Date().toISOString()
-          }
+      // Check current auth session
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        userSession = session;
+        updateConnectionBadge(true, session.user.email);
+        document.getElementById('auth-signed-out').style.display = 'none';
+        document.getElementById('auth-signed-in').style.display = 'block';
+        document.getElementById('user-email-subtitle').innerText = session.user.email;
+        
+        // Fetch linked company profile
+        await fetchCompanyProfile();
+      } else {
+        updateConnectionBadge(false);
+      }
+      
+      // Auto listen to session updates
+      supabase.auth.onAuthStateChange(async (event, session) => {
+        if (session) {
+          userSession = session;
+          updateConnectionBadge(true, session.user.email);
+          document.getElementById('auth-signed-out').style.display = 'none';
+          document.getElementById('auth-signed-in').style.display = 'block';
+          document.getElementById('user-email-subtitle').innerText = session.user.email;
+          await fetchCompanyProfile();
+        } else {
+          userSession = null;
+          activeCompany = null;
+          updateConnectionBadge(false);
+          document.getElementById('auth-signed-out').style.display = 'block';
+          document.getElementById('auth-signed-in').style.display = 'none';
+          document.getElementById('company-name-subtitle').innerText = "Isolamento Multitenant Ativo (Desconectado)";
         }
-      };
+      });
+    });
 
-      printTerminal(mockResponse);
+    // switch UI Tabs
+    async function switchTab(tabId) {
+      // Deactivate all
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
+
+      // Activate selected
+      const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.getAttribute('onclick').includes(tabId));
+      if (activeBtn) activeBtn.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+
+      // Prevent queries if not authenticated
+      if (!userSession && tabId !== 'auth') {
+        showToast("🔑 Por favor, faça login ou cadastre-se na aba Sessão primeiro.", "error");
+        switchTab('auth');
+        return;
+      }
+
+      if (userSession && !activeCompany && tabId !== 'auth') {
+        showToast("🏢 Vincule uma empresa na aba Sessão para habilitar o ERP.", "error");
+        switchTab('auth');
+        return;
+      }
+
+      // Fetch fresh data based on tab
+      if (userSession && activeCompany) {
+        if (tabId === 'crm') await fetchCustomers();
+        if (tabId === 'stock') await fetchProducts();
+        if (tabId === 'sales') {
+          await fetchCustomers();
+          await fetchProducts();
+          await fetchSalesOrders();
+        }
+        if (tabId === 'financial') await fetchFinancialTransactions();
+      }
     }
 
-    function simulateNFeXML() {
-      setTerminalTitle('NF-e XML Generator [A1 Certificate Simulator]');
+    // Helper to send HTTP requests to our Node backend
+    async function apiRequest(endpoint, method = 'GET', body = null) {
+      if (!userSession) throw new Error("Usuário não autenticado no cliente.");
       
-      const xmlString = \`<?xml version="1.0" encoding="UTF-8"?>
-<NFe xmlns="http://www.portalfiscal.inf.br/nfe">
-  <infNFe Id="NFe35260512345678000199550010000001231234567891" versao="4.00">
-    <ide>
-      <cUF>35</cUF>
-      <cNF>123456789</cNF>
-      <natOp>Venda de mercadoria</natOp>
-      <mod>55</mod>
-      <serie>1</serie>
-      <nNF>123</nNF>
-      <dhEmi>\` + new Date().toISOString() + \`</dhEmi>
-      <tpNF>1</tpNF>
-      <idDest>1</idDest>
-      <cMunFG>3550308</cMunFG>
-      <tpImp>1</tpImp>
-      <tpEmis>1</tpEmis>
-    </ide>
-    <emit>
-      <CNPJ>12345678000199</CNPJ>
-      <xNome>JC Distribuidora de Alimentos Ltda</xNome>
-      <enderEmit>
-        <xLgr>Avenida Paulista</xLgr>
-        <nro>1000</nro>
-        <xBairro>Bela Vista</xBairro>
-        <cMun>3550308</cMun>
-        <xMun>Sao Paulo</xMun>
-        <UF>SP</UF>
-        <CEP>01310100</CEP>
-      </enderEmit>
-    </emit>
-    <dest>
-      <CNPJ>98765432000100</CNPJ>
-      <xNome>Supermercado do Bairro EIRELI</xNome>
-    </dest>
-    <det nItem="1">
-      <prod>
-        <cProd>SKU-PROD-001</cProd>
-        <xProd>Produto Acabado Exemplo VNI</xProd>
-        <NCM>10063021</NCM>
-        <CFOP>5102</CFOP>
-        <uCom>UN</uCom>
-        <qCom>10.0000</qCom>
-        <vUnCom>15.0000</vUnCom>
-        <vProd>150.00</vProd>
-      </prod>
-    </det>
-    <total>
-      <ICMSTot>
-        <vProd>150.00</vProd>
-        <vNF>150.00</vNF>
-      </ICMSTot>
-    </total>
-  </infNFe>
-  <!-- ASSINATURA DIGITAL A1 (Gerada nativamente via xml-crypto / Node native crypto) -->
-  <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
-    <SignedInfo>
-      <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
-      <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
-      <Reference URI="#NFe35260512345678000199550010000001231234567891">
-        <Transforms>
-          <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
-        </Transforms>
-        <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-        <DigestValue>signedHashDigestBase64StringExample==</DigestValue>
-      </Reference>
-    </SignedInfo>
-    <SignatureValue>base64SignedXMLBinaryStringHereGeneratedByCryptoPrivateSignKey==</SignatureValue>
-    <KeyInfo>
-      <X509Data>
-        <X509Certificate>MIIE3DCCA8SgAwIBAgIQDJl0vjB9W2K58XoE1y/vTzANBgkqhkiG9w0BAQsFADCB...</X509Certificate>
-      </X509Data>
-    </KeyInfo>
-  </Signature>
-</NFe>\`;
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + userSession.access_token
+      };
 
-      printTerminal(xmlString);
+      const options = {
+        method,
+        headers
+      };
+
+      if (body) {
+        options.body = JSON.stringify(body);
+      }
+
+      const response = await fetch(endpoint, options);
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error?.message || data.message || "Erro na chamada de API.");
+      }
+
+      return data;
+    }
+
+    // TOAST NOTIFICATIONS
+    function showToast(message, type = "success") {
+      const toast = document.getElementById('toast');
+      const msgSpan = document.getElementById('toast-message');
+      
+      toast.className = 'toast show ' + (type === 'success' ? 'toast-success' : 'toast-error');
+      msgSpan.innerText = message;
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+
+    // CONNECTION BADGE
+    function updateConnectionBadge(connected, email = "") {
+      const badge = document.getElementById('connection-badge');
+      const text = document.getElementById('connection-text');
+      if (connected) {
+        badge.className = 'status-badge connected';
+        text.innerText = "Sessão Ativa: " + email;
+      } else {
+        badge.className = 'status-badge';
+        text.innerText = "Desconectado";
+      }
+    }
+
+    // AUTHENTICATION OPERATIONS
+    async function handleAuth(type) {
+      const email = document.getElementById('auth-email').value;
+      const password = document.getElementById('auth-password').value;
+
+      if (!email || !password) {
+        showToast("Preencha todos os campos corporativos.", "error");
+        return;
+      }
+
+      try {
+        if (type === 'signup') {
+          const { data, error } = await supabase.auth.signUp({ email, password });
+          if (error) throw error;
+          showToast("Conta criada! Confirme seu e-mail ou faça login.", "success");
+        } else {
+          const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+          if (error) throw error;
+          showToast("Autenticado com sucesso!", "success");
+        }
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+
+    async function handleSignOut() {
+      try {
+        await supabase.auth.signOut();
+        showToast("Sessão encerrada.");
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+
+    // MULTI-TENANT COMPANY DATA LOADER
+    async function fetchCompanyProfile() {
+      try {
+        const response = await apiRequest('/api/companies/me');
+        if (response.data) {
+          activeCompany = response.data;
+          document.getElementById('company-name-subtitle').innerText = "Isolamento Multitenant: " + activeCompany.name;
+          document.getElementById('company-provision-box').style.display = 'none';
+          document.getElementById('company-details-box').style.display = 'block';
+          document.getElementById('company-uuid-label').innerText = activeCompany.id;
+          document.getElementById('company-name-label').innerText = activeCompany.name;
+          document.getElementById('company-cnpj-label').innerText = activeCompany.cnpj || "Não cadastrado";
+        } else {
+          activeCompany = null;
+          document.getElementById('company-name-subtitle').innerText = "Isolamento Multitenant: Sem Empresa Vinculada";
+          document.getElementById('company-provision-box').style.display = 'block';
+          document.getElementById('company-details-box').style.display = 'none';
+        }
+      } catch (err) {
+        console.error("Erro ao buscar empresa:", err);
+      }
+    }
+
+    async function handleCreateCompany() {
+      const name = document.getElementById('company-name').value;
+      const cnpj = document.getElementById('company-cnpj').value;
+
+      if (!name) {
+        showToast("O nome comercial da empresa é obrigatório.", "error");
+        return;
+      }
+
+      try {
+        const response = await apiRequest('/api/companies', 'POST', { name, cnpj });
+        showToast(response.message);
+        await fetchCompanyProfile();
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+
+    // CRM OPERATIONS
+    async function fetchCustomers() {
+      try {
+        const response = await apiRequest('/api/crm/customers');
+        customerList = response.data;
+        
+        // Populate Sales Customer Select dropdown
+        const select = document.getElementById('sale-customer-select');
+        select.innerHTML = '<option value="">Selecione um cliente cadastrado...</option>';
+        customerList.forEach(c => {
+          select.innerHTML += '<option value="' + c.id + '">' + c.name + ' (' + c.cpf_cnpj + ')</option>';
+        });
+
+        // Render Customers Table
+        const tbody = document.querySelector('#customers-table tbody');
+        if (customerList.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Nenhum cliente cadastrado ainda.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = '';
+        customerList.forEach(c => {
+          const statusBadge = c.status === 'active' ? '<span class="badge success">Ativo</span>' : (c.status === 'inactive' ? '<span class="badge danger">Inativo</span>' : '<span class="badge info">Lead</span>');
+          const formattedPurchases = 'R$ ' + parseFloat(c.total_purchases).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          
+          tbody.innerHTML += '<tr>' +
+            '<td><b>' + c.name + '</b>' + (c.trade_name ? '<br><span style="font-size:0.75rem;color:var(--text-muted);">' + c.trade_name + '</span>' : '') + '</td>' +
+            '<td>' + c.cpf_cnpj + '</td>' +
+            '<td>' + (c.email || '-') + '</td>' +
+            '<td>' + (c.phone || '-') + '</td>' +
+            '<td>' + statusBadge + '</td>' +
+            '<td>' + formattedPurchases + '</td>' +
+            '</tr>';
+        });
+      } catch (err) {
+        console.error("Erro ao buscar clientes:", err);
+      }
+    }
+
+    async function handleCreateCustomer() {
+      const name = document.getElementById('cust-name').value;
+      const person_type = document.getElementById('cust-type').value;
+      const cpf_cnpj = document.getElementById('cust-doc').value;
+      const email = document.getElementById('cust-email').value;
+      const phone = document.getElementById('cust-phone').value;
+      const city = document.getElementById('cust-city').value;
+      const state = document.getElementById('cust-state').value;
+
+      if (!name || !cpf_cnpj) {
+        showToast("Nome e documento CPF/CNPJ são obrigatórios.", "error");
+        return;
+      }
+
+      try {
+        const response = await apiRequest('/api/crm/customers', 'POST', {
+          name, person_type, cpf_cnpj, email, phone,
+          address_city: city, address_state: state
+        });
+        showToast(response.message);
+        
+        // Reset fields
+        document.getElementById('cust-name').value = '';
+        document.getElementById('cust-doc').value = '';
+        document.getElementById('cust-email').value = '';
+        document.getElementById('cust-phone').value = '';
+        document.getElementById('cust-city').value = '';
+        document.getElementById('cust-state').value = '';
+        
+        await fetchCustomers();
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+
+    // STOCK OPERATIONS
+    async function fetchProducts() {
+      try {
+        const response = await apiRequest('/api/stock/products');
+        productList = response.data;
+
+        // Populate Sales Product Select dropdown
+        const select = document.getElementById('sale-product-select');
+        select.innerHTML = '<option value="">Selecione um produto...</option>';
+        productList.forEach(p => {
+          if (p.type !== 'raw_material') {
+            select.innerHTML += '<option value="' + p.id + '">' + p.name + ' (' + p.sku + ' - R$ ' + parseFloat(p.price).toFixed(2) + ')</option>';
+          }
+        });
+
+        // Render Products Table
+        const tbody = document.querySelector('#products-table tbody');
+        if (productList.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-muted);">Nenhum produto cadastrado ainda.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = '';
+        productList.forEach(p => {
+          const typeLabel = p.type === 'service' ? '<span class="badge info">Serviço</span>' : (p.type === 'raw_material' ? '<span class="badge warning">Insumo</span>' : '<span class="badge success">Produto</span>');
+          const cost = 'R$ ' + parseFloat(p.cost_price).toFixed(2);
+          const price = 'R$ ' + parseFloat(p.price).toFixed(2);
+          const stock = parseFloat(p.stock_quantity).toFixed(0);
+          
+          let stockStatus = '<span class="badge success">Normal</span>';
+          if (p.type !== 'service') {
+            if (p.stock_quantity <= p.min_stock) {
+              stockStatus = '<span class="badge danger">Mínimo / Alerta</span>';
+            }
+          } else {
+            stockStatus = '<span class="badge info">Ilimitado</span>';
+          }
+
+          tbody.innerHTML += '<tr>' +
+            '<td><code>' + p.sku + '</code></td>' +
+            '<td><b>' + p.name + '</b></td>' +
+            '<td>' + typeLabel + '</td>' +
+            '<td>' + p.unit + '</td>' +
+            '<td>' + cost + '</td>' +
+            '<td>' + price + '</td>' +
+            '<td>' + (p.type === 'service' ? '∞' : stock) + '</td>' +
+            '<td>' + stockStatus + '</td>' +
+            '</tr>';
+        });
+      } catch (err) {
+        console.error("Erro ao buscar produtos:", err);
+      }
+    }
+
+    async function handleCreateProduct() {
+      const sku = document.getElementById('prod-sku').value;
+      const name = document.getElementById('prod-name').value;
+      const unit = document.getElementById('prod-unit').value;
+      const cost_price = document.getElementById('prod-cost').value;
+      const price = document.getElementById('prod-price').value;
+      const stock_quantity = document.getElementById('prod-stock').value;
+      const min_stock = document.getElementById('prod-min').value;
+      const type = document.getElementById('prod-type').value;
+
+      if (!sku || !name || !price) {
+        showToast("SKU, Nome e Preço de Venda são obrigatórios.", "error");
+        return;
+      }
+
+      try {
+        const response = await apiRequest('/api/stock/products', 'POST', {
+          sku, name, unit, cost_price, price, stock_quantity, min_stock, type
+        });
+        showToast(response.message);
+
+        // Reset
+        document.getElementById('prod-sku').value = '';
+        document.getElementById('prod-name').value = '';
+        document.getElementById('prod-cost').value = '';
+        document.getElementById('prod-price').value = '';
+        document.getElementById('prod-stock').value = '';
+        document.getElementById('prod-min').value = '';
+
+        await fetchProducts();
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+
+    // SALES CART & TRANS-ACTION LOGS
+    function updateProductUnitPrice() {
+      const prodId = document.getElementById('sale-product-select').value;
+      if (!prodId) return;
+
+      const product = productList.find(p => p.id === prodId);
+      if (product) {
+        document.getElementById('sale-product-price').value = parseFloat(product.price).toFixed(2);
+      }
+    }
+
+    function addCartItem() {
+      const prodId = document.getElementById('sale-product-select').value;
+      const qty = parseFloat(document.getElementById('sale-product-qty').value);
+      const price = parseFloat(document.getElementById('sale-product-price').value);
+
+      if (!prodId || isNaN(qty) || qty <= 0 || isNaN(price) || price < 0) {
+        showToast("Preencha o produto, a quantidade e o valor unitário corretos.", "error");
+        return;
+      }
+
+      const product = productList.find(p => p.id === prodId);
+      if (!product) return;
+
+      // Add to array
+      currentCart.push({
+        product_id: prodId,
+        name: product.name,
+        quantity: qty,
+        unit_price: price
+      });
+
+      renderCart();
+    }
+
+    function removeCartItem(index) {
+      currentCart.splice(index, 1);
+      renderCart();
+    }
+
+    function renderCart() {
+      const container = document.getElementById('cart-items-container');
+      const totalLabel = document.getElementById('cart-total-label');
+
+      if (currentCart.length === 0) {
+        container.innerHTML = '<p class="muted" style="text-align: center; margin: 1rem 0;">Seu carrinho está vazio. Escolha um produto e adicione.</p>';
+        totalLabel.innerText = 'Total: R$ 0,00';
+        return;
+      }
+
+      container.innerHTML = '';
+      let grandTotal = 0;
+
+      currentCart.forEach((item, index) => {
+        const itemTotal = item.quantity * item.unit_price;
+        grandTotal += itemTotal;
+
+        container.innerHTML += '<div class="cart-item-row">' +
+          '<span><b>' + item.name + '</b> (x' + item.quantity + ')</span>' +
+          '<span>R$ ' + itemTotal.toFixed(2) + ' <button class="cart-remove-btn" onclick="removeCartItem(' + index + ')">×</button></span>' +
+          '</div>';
+      });
+
+      totalLabel.innerText = 'Total: R$ ' + grandTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    async function handleCreateSalesOrder() {
+      const customerId = document.getElementById('sale-customer-select').value;
+
+      if (!customerId) {
+        showToast("Por favor, selecione um cliente.", "error");
+        return;
+      }
+
+      if (currentCart.length === 0) {
+        showToast("O carrinho de itens deve conter no mínimo 1 produto.", "error");
+        return;
+      }
+
+      try {
+        const response = await apiRequest('/api/sales/orders', 'POST', {
+          customer_id: customerId,
+          items: currentCart
+        });
+        showToast(response.message);
+
+        // Clear cart
+        currentCart = [];
+        renderCart();
+
+        await fetchSalesOrders();
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+
+    async function fetchSalesOrders() {
+      try {
+        const response = await apiRequest('/api/sales/orders');
+        const orders = response.data;
+
+        const tbody = document.querySelector('#sales-table tbody');
+        if (orders.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Nenhuma venda registrada ainda.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = '';
+        orders.forEach(o => {
+          const date = new Date(o.created_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+          const customerName = o.customers?.name || "Cliente Excluído";
+          const amount = 'R$ ' + parseFloat(o.total_amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+          
+          let statusBadge = '';
+          if (o.status === 'draft') statusBadge = '<span class="badge info">Orçamento</span>';
+          if (o.status === 'approved') statusBadge = '<span class="badge success">Aprovado</span>';
+          if (o.status === 'invoiced') statusBadge = '<span class="badge success">Faturado (NF-e)</span>';
+          if (o.status === 'cancelled') statusBadge = '<span class="badge danger">Cancelado</span>';
+
+          let nfeBadge = '';
+          if (o.nfe_status === 'not_issued') nfeBadge = '<span class="badge info">Não Emitida</span>';
+          if (o.nfe_status === 'issued') nfeBadge = '<span class="badge success">Emitida</span>';
+          if (o.nfe_status === 'error') nfeBadge = '<span class="badge danger">Erro Sefaz</span>';
+
+          let actionBtn = '';
+          if (o.status === 'draft') {
+            actionBtn = '<button class="btn-action" onclick="handleInvoiceSale(\\'' + o.id + '\\')">Faturar Venda</button>';
+          } else if (o.status === 'approved') {
+            actionBtn = '<button class="btn-action" style="color:var(--danger);border-color:var(--border);" onclick="handleCancelSale(\\'' + o.id + '\\')">Cancelar Faturamento</button>';
+          } else {
+            actionBtn = '<span style="font-size:0.75rem;color:var(--text-muted);">Transação Finalizada</span>';
+          }
+
+          tbody.innerHTML += '<tr>' +
+            '<td>' + date + '</td>' +
+            '<td><b>' + customerName + '</b></td>' +
+            '<td>' + amount + '</td>' +
+            '<td>' + statusBadge + '</td>' +
+            '<td>' + nfeBadge + '</td>' +
+            '<td>' + actionBtn + '</td>' +
+            '</tr>';
+        });
+      } catch (err) {
+        console.error("Erro ao buscar vendas:", err);
+      }
+    }
+
+    async function handleInvoiceSale(orderId) {
+      try {
+        const response = await apiRequest('/api/sales/orders/' + orderId + '/status', 'PUT', { status: 'approved' });
+        showToast("Pedido faturado! Estoque atualizado e contas a receber geradas no financeiro.");
+        await fetchSalesOrders();
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+
+    async function handleCancelSale(orderId) {
+      try {
+        const response = await apiRequest('/api/sales/orders/' + orderId + '/status', 'PUT', { status: 'cancelled' });
+        showToast("Pedido de venda cancelado. Estoque estornado.");
+        await fetchSalesOrders();
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+
+    // FINANCIAL LEDGER CASH FLOW VIEW
+    async function fetchFinancialTransactions() {
+      try {
+        const response = await apiRequest('/api/financial/transactions');
+        const txs = response.data;
+
+        let totalReceivables = 0;
+
+        const tbody = document.querySelector('#transactions-table tbody');
+        if (txs.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Nenhum lançamento no fluxo de caixa ainda.</td></tr>';
+          document.getElementById('financial-receivables-label').innerText = 'R$ 0,00';
+          return;
+        }
+
+        tbody.innerHTML = '';
+        txs.forEach(t => {
+          const date = new Date(t.due_date).toLocaleDateString('pt-BR');
+          const amountVal = parseFloat(t.amount);
+          const amount = 'R$ ' + amountVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+          
+          if (t.type === 'receivable' && t.status === 'pending') {
+            totalReceivables += amountVal;
+          }
+
+          const typeLabel = t.type === 'receivable' ? '<span class="badge success">Entrada (Receber)</span>' : '<span class="badge danger">Saída (Pagar)</span>';
+          const statusBadge = t.status === 'paid' ? '<span class="badge success">Pago</span>' : (t.status === 'cancelled' ? '<span class="badge danger">Cancelado</span>' : '<span class="badge warning">Aguardando Pagamento</span>');
+
+          tbody.innerHTML += '<tr>' +
+            '<td>' + date + '</td>' +
+            '<td><b>' + t.description + '</b></td>' +
+            '<td>' + amount + '</td>' +
+            '<td>' + typeLabel + '</td>' +
+            '<td>' + statusBadge + '</td>' +
+            '<td><code>' + t.category + '</code></td>' +
+            '</tr>';
+        });
+
+        // Update financial widget header
+        document.getElementById('financial-receivables-label').innerText = 'R$ ' + totalReceivables.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      } catch (err) {
+        console.error("Erro ao buscar transações financeiras:", err);
+      }
     }
   </script>
 </body>
