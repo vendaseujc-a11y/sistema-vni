@@ -7,16 +7,23 @@ dotenv.config();
 const envSchema = z.object({
   PORT: z.coerce.number().default(4000),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  SUPABASE_URL: z.string().url('SUPABASE_URL deve ser uma URL válida.'),
-  SUPABASE_ANON_KEY: z.string().min(1, 'SUPABASE_ANON_KEY é obrigatório.'),
-  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1, 'SUPABASE_SERVICE_ROLE_KEY é obrigatório.')
+  SUPABASE_URL: z.string().default(''),
+  SUPABASE_ANON_KEY: z.string().default(''),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().default('')
 });
 
 const _env = envSchema.safeParse(process.env);
 
 if (!_env.success) {
-  console.error('❌ Falha na validação das variáveis de ambiente:', _env.error.format());
-  process.exit(1);
+  console.warn('⚠️ Algumas variáveis de ambiente não foram validadas:', _env.error.format());
 }
 
-export const env = _env.data;
+export const env = _env.success 
+  ? _env.data 
+  : {
+      PORT: Number(process.env.PORT) || 4000,
+      NODE_ENV: (process.env.NODE_ENV as any) || 'development',
+      SUPABASE_URL: process.env.SUPABASE_URL || '',
+      SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY || '',
+      SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+    };

@@ -36,6 +36,13 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
       });
     }
 
+    if (!supabaseAdmin) {
+      return res.status(500).json({
+        error: 'Erro de Configuração',
+        message: 'O servidor não possui as variáveis de ambiente do Supabase configuradas no backend.'
+      });
+    }
+
     // Validate the token against Supabase Auth using the admin client (which handles validation securely)
     const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
 

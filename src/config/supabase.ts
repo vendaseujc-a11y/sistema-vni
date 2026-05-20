@@ -6,12 +6,14 @@ import { env } from './env.js';
  * Bypasses Row Level Security (RLS). Use with high caution and only for system operations,
  * background jobs, or server-level tasks.
  */
-export const supabaseAdmin = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
-  auth: {
-    persistSession: false,
-    autoRefreshToken: false
-  }
-});
+export const supabaseAdmin = (env.SUPABASE_URL && env.SUPABASE_SERVICE_ROLE_KEY)
+  ? createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false
+      }
+    })
+  : null as any;
 
 /**
  * Creates a Supabase client scoped to a specific user's authentication token.
@@ -21,6 +23,9 @@ export const supabaseAdmin = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE
  * @param userToken - The Bearer JWT token of the authenticated user
  */
 export function createSupabaseClient(userToken?: string) {
+  if (!env.SUPABASE_URL || !env.SUPABASE_ANON_KEY) {
+    throw new Error('Supabase client não configurado no servidor.');
+  }
   return createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY, {
     auth: {
       persistSession: false,
