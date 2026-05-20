@@ -452,6 +452,26 @@ export const dashboardHTML = `<!DOCTYPE html>
     <div id="tab-auth" class="card active">
       <span class="card-title">🔐 Controle de Acesso e Perfil Corporativo</span>
       
+      <!-- SUPABASE CONFIG FALLBACK VIEW (ONLY SHOWS IF NOT CONFIGURED YET) -->
+      <div id="supabase-config-box" style="display: none; background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1.5rem;">
+        <h4 style="color: #ffffff; margin-bottom: 0.5rem;">⚙️ Configuração Manual do Supabase (Offline / Local)</h4>
+        <p class="muted" style="margin-bottom: 1rem;">O servidor não pôde carregar as variáveis de ambiente automaticamente (ou você está acessando a versão Vercel sem variáveis cadastradas). Insira as credenciais do seu projeto Supabase abaixo:</p>
+        <div class="form-grid">
+          <div class="input-group">
+            <label>Supabase URL</label>
+            <input type="text" id="local-supabase-url" placeholder="https://xxxx.supabase.co">
+          </div>
+          <div class="input-group">
+            <label>Supabase Anon/Public Key</label>
+            <input type="text" id="local-supabase-key" placeholder="eyJhbGciOiJIUzI1Ni...">
+          </div>
+        </div>
+        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+          <button class="btn-submit" style="background: linear-gradient(135deg, #ef4444, #b91c1c);" onclick="handleSaveLocalConfig()">Salvar e Conectar Supabase</button>
+          <button class="btn-submit" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border);" onclick="handleUseDefaultEnv()">Usar do Servidor</button>
+        </div>
+      </div>
+
       <!-- NOT SIGNED IN VIEW -->
       <div id="auth-signed-out">
         <p class="muted" style="margin-bottom: 1.5rem;">Cadastre-se ou entre em sua conta administrativa para inicializar o seu ERP dedicado e isolado por Row Level Security.</p>
@@ -786,8 +806,16 @@ export const dashboardHTML = `<!DOCTYPE html>
   
   <script>
     // Configuration dynamically injected by Node.js server!
-    const SUPABASE_URL = "__SUPABASE_URL__";
-    const SUPABASE_ANON_KEY = "__SUPABASE_ANON_KEY__";
+    let serverSupabaseUrl = "__SUPABASE_URL__";
+    let serverSupabaseKey = "__SUPABASE_ANON_KEY__";
+
+    // Fallback: check localStorage, otherwise use server-injected values
+    let SUPABASE_URL = localStorage.getItem('local_supabase_url') || serverSupabaseUrl;
+    let SUPABASE_ANON_KEY = localStorage.getItem('local_supabase_key') || serverSupabaseKey;
+
+    // Normalize placeholders
+    if (SUPABASE_URL === "__SUPABASE_URL__") SUPABASE_URL = "";
+    if (SUPABASE_ANON_KEY === "__SUPABASE_ANON_KEY__") SUPABASE_ANON_KEY = "";
 
     let supabase = null;
     let userSession = null;
@@ -799,7 +827,7 @@ export const dashboardHTML = `<!DOCTYPE html>
     let productList = [];
 
     // Initialize Supabase Client
-    if (SUPABASE_URL !== "__SUPABASE_URL__" && SUPABASE_ANON_KEY !== "__SUPABASE_ANON_KEY__") {
+    if (SUPABASE_URL && SUPABASE_ANON_KEY) {
       try {
         supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       } catch (err) {
@@ -807,11 +835,51 @@ export const dashboardHTML = `<!DOCTYPE html>
       }
     }
 
+    // Local Configuration Helpers
+    function handleSaveLocalConfig() {
+      const url = document.getElementById('local-supabase-url').value.trim();
+      const key = document.getElementById('local-supabase-key').value.trim();
+
+      if (!url || !key) {
+        showToast("Preencha ambos os campos URL e Chave Anon do Supabase.", "error");
+        return;
+      }
+
+      localStorage.setItem('local_supabase_url', url);
+      localStorage.setItem('local_supabase_key', key);
+      
+      showToast("Configuração salva com sucesso! Recarregando...", "success");
+      setTimeout(() => {
+        window.location.reload();
+      }, 1200);
+    }
+
+    function handleUseDefaultEnv() {
+      localStorage.removeItem('local_supabase_url');
+      localStorage.removeItem('local_supabase_key');
+      
+      showToast("Configuração local removida! Recarregando...", "success");
+      setTimeout(() => {
+        window.location.reload();
+      }, 1200);
+    }
+
     // Initialize application sessions
     window.addEventListener('load', async () => {
       if (!supabase) {
-        showToast("⚠️ Supabase não configurado. Adicione as chaves no .env e suba novamente na Vercel.", "error");
+        document.getElementById('supabase-config-box').style.display = 'block';
+        document.getElementById('auth-signed-out').style.display = 'none';
+        showToast("⚙️ Supabase não configurado no servidor. Insira as credenciais abaixo.", "error");
         return;
+      }
+
+      // If configured via localStorage, let user know
+      if (localStorage.getItem('local_supabase_url')) {
+        showToast("💡 Conectado via Configuração Manual Local", "success");
+        // Pre-fill fields
+        document.getElementById('local-supabase-url').value = localStorage.getItem('local_supabase_url');
+        document.getElementById('local-supabase-key').value = localStorage.getItem('local_supabase_key');
+        document.getElementById('supabase-config-box').style.display = 'block';
       }
 
       // Check current auth session
